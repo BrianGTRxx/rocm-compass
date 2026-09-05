@@ -9,7 +9,7 @@ Environment diagnostics, a compatibility resolver, and a live-tracked map of the
 
 NVIDIA/CUDA dominates AI tooling. AMD's ROCm is a real open alternative, but two things keep people from adopting it: broken installs (version mismatches between kernel, `amdgpu` driver, ROCm, and Python packages), and not knowing in advance whether the packages they rely on (`torch`, `flash-attn`, `vllm`, ...) actually work on ROCm today.
 
-Several projects already tackle CUDA-to-HIP *code* migration (see `docs/rocm-compass-plan.md` section 3). This project deliberately does **not** compete there. Instead it covers the two things nobody maintains publicly and continuously: **environment diagnosis + compatibility resolution**, and **ecosystem-wide visibility**, tied together by a shared feedback loop.
+Several projects already tackle CUDA-to-HIP *code* migration (HIPify and a handful of AI-assisted porting tools). This project deliberately does **not** compete there. Instead it covers the two things nobody maintains publicly and continuously: **environment diagnosis + compatibility resolution**, and **ecosystem-wide visibility**, tied together by a shared feedback loop.
 
 ## What it's made of
 
@@ -17,11 +17,9 @@ Several projects already tackle CUDA-to-HIP *code* migration (see `docs/rocm-com
 - **`compass/`** -- the public compatibility matrix (which package + version combos are known to work, on which GPU arch / ROCm version). Served as a JSON API (`compass/api.py`) and, early on, as a generated table in this README.
 - **`shared/`** -- the schema both modules read and write. When someone runs `rocm-doctor check --report`, an anonymized result feeds directly into the dataset that powers the Compass matrix. Adding `--submit` shares it beyond your own machine too: it opens a GitHub issue, which a GitHub Action automatically validates and merges into [`compass/community_reports.jsonl`](compass/community_reports.jsonl) -- no server, no manual review. The tool gets more accurate the more it's used, without relying on manual upkeep.
 
-Full rationale, what was deliberately *not* built, and the phased plan: [`docs/rocm-compass-plan.md`](docs/rocm-compass-plan.md).
-
 ## Status
 
-Fase 0, 1, and 2 done: the compatibility graph (`torch`, `vllm`) and the 12-package Compass matrix hold real, sourced data; the Doctor CLI + resolver run end-to-end; and the full data loop works, including third-party submissions -- `rocm-doctor check --report --submit` opens a GitHub issue, `.github/workflows/ingest-reports.yml` validates and merges it into `compass/community_reports.jsonl` automatically, and `compass/api.py` serves the combined result. Still ahead: broader graph coverage (`flash-attn` deliberately skipped so far -- no single citable official version pin exists yet), and Fase 3 (sharing this with the ROCm community).
+The compatibility graph (`torch`, `vllm`) and the 12-package Compass matrix hold real, sourced data; the Doctor CLI + resolver run end-to-end; and the full data loop works, including third-party submissions -- `rocm-doctor check --report --submit` opens a GitHub issue, `.github/workflows/ingest-reports.yml` validates and merges it into `compass/community_reports.jsonl` automatically, and `compass/api.py` serves the combined result. Still ahead: broader graph coverage (`flash-attn` deliberately skipped so far -- no single citable official version pin exists yet across the mainline package or its various ROCm forks/wheels) and a real weekly scraper (`compass/scraper.py` is still a skeleton).
 
 ## Quickstart
 

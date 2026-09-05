@@ -1,9 +1,8 @@
 """Complementary data source for the Compass matrix: scans each tracked
 package's GitHub releases/issues for ROCm/HIP/AMD mentions.
 
-This is secondary to the Doctor --report loop (docs/rocm-compass-plan.md,
-section 4.3) -- it exists to cover packages that don't yet have enough
-community reports.
+This is secondary to the Doctor --report loop -- it exists to cover packages
+that don't yet have enough community reports.
 """
 
 from __future__ import annotations

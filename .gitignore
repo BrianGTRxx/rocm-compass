@@ -21,3 +21,7 @@ shared/reports.db
 
 # Personal work log -- not meant for public GitHub.
 /bitacora.md
+
+# Internal planning doc (rationale, roadmap, personal context) -- not meant
+# for public GitHub. The README carries what a visitor actually needs.
+/docs/

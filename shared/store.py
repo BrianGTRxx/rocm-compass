@@ -1,12 +1,11 @@
-"""Local SQLite-backed store for EnvironmentReport rows -- the one dataset
-`rocm-doctor check --report` writes to and `compass/aggregate.py` reads from.
+"""Local SQLite-backed store for EnvironmentReport rows -- what
+`rocm-doctor check --report` writes to and `compass/aggregate.py` reads from
+for THIS machine's own reports. Deliberately just a file: no database
+migrations, no server, until there's real traction to justify more.
 
-Deliberately just a file (docs/rocm-compass-plan.md section 6: "SQLite al
-inicio -- nada de bases de datos complejas hasta que haya tracción real").
-How reports from OTHER people's machines eventually reach this store once the
-project is public (a PR/issue bot? a real HTTP endpoint?) is still an open
-question (see plan section 10) -- this module only defines the local
-read/write contract both the Doctor and the Compass share today.
+Reports from other people's machines take a separate path -- see
+compass/ingest.py and .github/workflows/ingest-reports.yml, which land in
+the committed compass/community_reports.jsonl instead of here.
 """
 
 from __future__ import annotations

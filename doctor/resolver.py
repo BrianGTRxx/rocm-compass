@@ -2,9 +2,8 @@
 find the nearest known-good node in the compatibility graph and the
 minimum-cost path of changes to reach it.
 
-This is the module's core differentiator (see docs/rocm-compass-plan.md,
-section 4.1): a small weighted graph-search problem instead of a flat
-rules table.
+This is the module's core differentiator: a small weighted graph-search
+problem instead of a flat rules table.
 """
 
 from __future__ import annotations

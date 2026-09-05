@@ -1,10 +1,8 @@
-"""Fase 2 checklist item, made concrete as a test: "Verificar que un reporte
-nuevo del Doctor efectivamente actualiza la matriz del Compass" (see
-docs/rocm-compass-plan.md section 8). Drives the Doctor side (`_submit_report`,
+"""Proves the Doctor and Compass are actually one loop, not two disconnected
+pieces that happen to share a schema: drives the Doctor side (`_submit_report`,
 what `rocm-doctor check --report` calls) and the Compass side
 (`aggregate_reports_by_package`, what compass/api.py serves) against the same
-database, proving they're actually the same loop and not two disconnected
-pieces that happen to share a schema.
+database.
 """
 
 from compass.aggregate import aggregate_reports_by_package

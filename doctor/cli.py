@@ -222,10 +222,10 @@ def _submit_report(
 
 
 def _share_via_github_issue(report: EnvironmentReport) -> str:
-    """Third-party report transport (docs/rocm-compass-plan.md section 10):
-    tries `gh issue create` on the upstream repo first (so a report from
-    anyone's machine reaches the maintained project, not wherever they
-    happen to have cloned/forked it); falls back to printing a pre-filled
+    """Third-party report transport: tries `gh issue create` on the upstream
+    repo first (so a report from anyone's machine reaches the maintained
+    project, not wherever they happen to have cloned/forked it); falls back
+    to printing a pre-filled
     github.com/issues/new URL -- that path needs only a browser, no local gh
     install or auth, so submission never hard-fails just because gh isn't set up.
     """

@@ -66,7 +66,7 @@ rocm-doctor check --package torch --report --outcome worked --notes "instalé co
 
 ### Compartirlo con el resto de la comunidad: `--submit`
 
-`--report` por sí solo solo queda en tu máquina. Para que llegue al dataset público (el mecanismo de transporte de terceros que describe `docs/rocm-compass-plan.md` sección 10, "PR/issue automático"), agregá `--submit`:
+`--report` por sí solo solo queda en tu máquina. Para que llegue al dataset público (vía un issue de GitHub que una Action ingiere automáticamente), agregá `--submit`:
 
 ```bash
 rocm-doctor check --package torch --report --outcome worked --submit
@@ -132,12 +132,9 @@ ROCm_AMD/
 │   └── ingest_report_issue.py        # corrido por la Action, wrappea compass/ingest.py
 ├── obsidian/          # vault generado (no versionado, ver sección 7)
 ├── tests/
-├── docs/
-│   └── rocm-compass-plan.md   # plan completo del proyecto (qué, por qué, fases)
+├── docs/               # plan interno del proyecto (no versionado, ver .gitignore)
 ├── bitacora.md         # registro de avance del mantenedor (no versionado, ver .gitignore)
 ├── README.md
 ├── CONTRIBUTING.md
 └── pyproject.toml
 ```
-
-Para el "por qué" de cada decisión de arquitectura, ver `docs/rocm-compass-plan.md`.

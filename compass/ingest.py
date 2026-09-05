@@ -1,6 +1,5 @@
 """Parses environment reports submitted as GitHub Issues -- the
-zero-infrastructure transport for third-party `--report` submissions chosen
-in docs/rocm-compass-plan.md section 10 ("PR/issue automatico al inicio").
+zero-infrastructure transport for third-party `--report` submissions.
 
 An issue body is expected to contain exactly one fenced ```json code block
 holding the same shape `EnvironmentReport.to_dict()` produces. `rocm-doctor
