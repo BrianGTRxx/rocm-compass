@@ -114,7 +114,7 @@ ROCm_AMD/
 ├── tests/
 ├── docs/
 │   └── rocm-compass-plan.md   # plan completo del proyecto (qué, por qué, fases)
-├── bitacora.md         # registro de avance
+├── bitacora.md         # registro de avance del mantenedor (no versionado, ver .gitignore)
 ├── README.md
 ├── CONTRIBUTING.md
 └── pyproject.toml

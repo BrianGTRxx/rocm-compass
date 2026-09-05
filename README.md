@@ -23,7 +23,7 @@ Full rationale, what was deliberately *not* built, and the phased plan: [`docs/r
 
 ## Status
 
-Fase 0 and Fase 1 done: the compatibility graph (`torch` only so far) and the 12-package Compass matrix hold real, sourced data, and the Doctor CLI + resolver run end-to-end. Fase 2's data loop (`--report` -> `shared/reports.db` -> `compass/api.py`'s live `community_reports` aggregate) is now wired up too, verified with a dedicated end-to-end test (`tests/test_loop_end_to_end.py`). Still missing: a way for reports from *other people's* machines to reach that dataset once this is public (see `docs/rocm-compass-plan.md` section 10), and graph coverage beyond `torch`. See `bitacora.md` for the full history.
+Fase 0 and Fase 1 done: the compatibility graph (`torch` only so far) and the 12-package Compass matrix hold real, sourced data, and the Doctor CLI + resolver run end-to-end. Fase 2's data loop (`--report` -> `shared/reports.db` -> `compass/api.py`'s live `community_reports` aggregate) is now wired up too, verified with a dedicated end-to-end test (`tests/test_loop_end_to_end.py`). Still missing: a way for reports from *other people's* machines to reach that dataset once this is public (see `docs/rocm-compass-plan.md` section 10), and graph coverage beyond `torch`.
 
 ## Quickstart
 

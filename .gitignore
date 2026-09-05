@@ -18,3 +18,6 @@ shared/reports.db
 # entirely from doctor/compatibility_graph.json, compass/packages.json and
 # doctor/known_issues.json. Regenerate instead of committing/editing by hand.
 /obsidian/
+
+# Personal work log -- not meant for public GitHub.
+/bitacora.md
