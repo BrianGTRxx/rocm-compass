@@ -1,0 +1,83 @@
+name: Ingest environment reports
+
+on:
+  issues:
+    types: [opened, edited, labeled]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  ingest:
+    if: contains(github.event.issue.labels.*.name, 'report')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -e .
+
+      - name: Parse and append the report
+        id: ingest
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          set +e
+          RESULT=$(printf '%s' "$ISSUE_BODY" | python scripts/ingest_report_issue.py)
+          STATUS=$?
+          set -e
+          echo "result<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$RESULT" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "ok=$([ $STATUS -eq 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit the new report
+        if: steps.ingest.outputs.ok == 'true'
+        run: |
+          git config user.name "rocm-compass-bot"
+          git config user.email "actions@github.com"
+          git add compass/community_reports.jsonl
+          git diff --cached --quiet || git commit -m "Ingest report from issue #${{ github.event.issue.number }} [skip ci]"
+          git push
+
+      - name: Comment and close on success
+        if: steps.ingest.outputs.ok == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = `${{ steps.ingest.outputs.result }}`.replace(/^OK: /, '');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `Ingested: ${result}\n\nThanks -- this is now part of the community compatibility matrix.`,
+            });
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ["ingested"],
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: "closed",
+            });
+
+      - name: Comment on rejection
+        if: steps.ingest.outputs.ok == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = `${{ steps.ingest.outputs.result }}`.replace(/^REJECTED: /, '');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `Could not ingest this report: ${result}\n\nEdit the issue with a valid \`\`\`json block and it'll be retried automatically.`,
+            });

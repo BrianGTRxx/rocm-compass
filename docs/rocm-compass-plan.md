@@ -164,10 +164,10 @@ rocm-compass/
 - CLI con salida legible y modo `--json`
 - Validar con al menos una sesión de GPU rentada
 
-**Fase 2 — Loop de datos + MVP del Compass (semanas 4-5)**
-- Implementar `--report` (aunque sea vía PR/issue automático al inicio)
-- Generar la matriz inicial del Compass a partir del dataset + scraper básico (2-3 fuentes)
-- Verificar que un reporte nuevo del Doctor efectivamente actualiza la matriz del Compass (probar el loop end-to-end)
+**Fase 2 — Loop de datos + MVP del Compass (semanas 4-5)** ✅ completa (2026-09-05)
+- [x] Implementar `--report` (local, `shared/reports.db`) y `--submit` (vía PR/issue automático -- GitHub Issue + `.github/workflows/ingest-reports.yml`)
+- [x] Generar la matriz inicial del Compass a partir del dataset (`compass/packages.json` con estado real de 12 paquetes; scraper básico sigue siendo un esqueleto, no prioritario mientras el loop de reportes sea la fuente principal)
+- [x] Verificar que un reporte nuevo del Doctor efectivamente actualiza la matriz del Compass (`tests/test_loop_end_to_end.py`, y ahora también para el transporte de terceros vía `compass/community_reports.jsonl`)
 
 **Fase 3 — Lanzamiento y comunidad (semana 6+)**
 - Publicar en GitHub con README claro, ejemplos, capturas, y una explicación simple del loop de datos (por qué correr `--report` ayuda a todos)
@@ -188,22 +188,22 @@ rocm-compass/
 
 ## 10. Preguntas abiertas
 
-- ¿Nombre final del proyecto? Con el loop de datos como diferenciador central, vale la pena buscar un nombre que refleje "resolver + mapa vivo" en vez de solo "brújula" — pendiente de decidir, no bloquea el arranque.
-- ¿El dashboard del Compass empieza como tabla en README o vale la pena un sitio web desde el día 1? — Recomendación: README primero, sitio solo si hay tracción (evita sobre-construir).
-- ¿El envío de reportes (`--report`) empieza como PR/issue automático (cero infra) o vale la pena montar un endpoint desde el día 1? — Recomendación: PR/issue automático al inicio, migrar cuando el volumen lo justifique.
+- ~~¿Nombre final del proyecto?~~ **Resuelto:** se queda "ROCm Compass" / `rocm-compass` — está libre en GitHub y PyPI, ya está en todo el código, y "compass" (brújula) describe bien lo que hace el resolver (te dice hacia dónde moverte). Verificado 2026-09-05.
+- ¿El dashboard del Compass empieza como tabla en README o vale la pena un sitio web desde el día 1? — Recomendación: README primero, sitio solo si hay tracción (evita sobre-construir). Sigue abierta.
+- ~~¿El envío de reportes (`--report`) empieza como PR/issue automático (cero infra) o vale la pena montar un endpoint desde el día 1?~~ **Resuelto:** se implementó la opción de cero infraestructura. `rocm-doctor check --report --submit` abre un GitHub Issue (vía `gh issue create` o un link pre-llenado) con el reporte en JSON; `.github/workflows/ingest-reports.yml` lo valida y lo agrega a `compass/community_reports.jsonl` automáticamente, comenta y cierra el issue. Ver `compass/ingest.py`, `shared/issue_format.py`, y `.github/ISSUE_TEMPLATE/environment_report.md` para reportes manuales. Migrar a un endpoint real sigue siendo una opción futura si el volumen lo justifica, pero no hace falta hoy.
 
 ---
 
 ## 11. Primeros pasos concretos (checklist para Claude Code)
 
-- [ ] Crear la estructura de repositorio descrita en la sección 6
-- [ ] Definir `shared/schema.py` con el esquema del `environment_report` (la pieza que conecta Doctor y Compass)
-- [ ] Escribir `doctor/compatibility_graph.json` con los primeros 15-20 nodos/aristas basados en issues reales de ROCm/PyTorch en GitHub
-- [ ] Implementar `doctor/resolver.py` (BFS/Dijkstra sobre el grafo de compatibilidad)
-- [ ] Implementar `doctor/detectors.py` y `rocm-doctor check` (con modo de prueba usando logs de ejemplo, ya que el entorno de desarrollo no tiene GPU AMD)
-- [ ] Implementar `--report` (envío de reporte anonimizado, vía PR/issue automático al inicio)
-- [ ] Poblar `compass/packages.json` con el estado inicial (manual) de 10-12 paquetes clave
-- [ ] Escribir `compass/scraper.py` (fuente complementaria, releases de GitHub)
-- [ ] Verificar el loop end-to-end: un reporte simulado del Doctor actualiza la matriz del Compass
-- [ ] Configurar GitHub Action que corra el scraper semanalmente y regenere la matriz
-- [ ] Escribir README.md con la visión del proyecto, el loop de datos, cómo instalarlo, y cómo contribuir
+- [x] Crear la estructura de repositorio descrita en la sección 6
+- [x] Definir `shared/schema.py` con el esquema del `environment_report` (la pieza que conecta Doctor y Compass)
+- [x] Escribir `doctor/compatibility_graph.json` con nodos reales basados en docs oficiales de ROCm (15 nodos de `torch`, 2 de `vllm` -- no 15-20 nodos de un solo golpe como preveía el plan original, sino ampliado incrementalmente con datos verificados; `flash-attn` deliberadamente sin nodo, ver sección 4.1)
+- [x] Implementar `doctor/resolver.py` (Dijkstra multi-fuente sobre el grafo de compatibilidad -- más robusto que el BFS de un solo punto de entrada previsto originalmente, ver bitácora)
+- [x] Implementar `doctor/detectors.py` y `rocm-doctor check` (con modo de prueba usando logs de ejemplo, ya que el entorno de desarrollo no tiene GPU AMD)
+- [x] Implementar `--report` (local) y `--submit` (envío de reporte anonimizado vía PR/issue automático)
+- [x] Poblar `compass/packages.json` con el estado real (investigado, no solo manual) de 12 paquetes clave
+- [ ] Escribir `compass/scraper.py` de verdad (hoy es un esqueleto -- no prioritario mientras el loop de reportes de `--submit` sea la fuente principal de datos)
+- [x] Verificar el loop end-to-end: un reporte simulado del Doctor actualiza la matriz del Compass (`tests/test_loop_end_to_end.py`), y lo mismo para un reporte de terceros ingerido desde un issue (`tests/test_aggregate.py::test_aggregate_merges_local_db_and_community_jsonl`)
+- [x] Configurar GitHub Action -- no la del scraper semanal (sigue pendiente), sino la de ingesta de reportes (`ingest-reports.yml`), que resultó ser la pieza de automatización más importante
+- [x] Escribir README.md con la visión del proyecto, el loop de datos, cómo instalarlo, y cómo contribuir

@@ -14,9 +14,10 @@ from shared.schema import EnvironmentSnapshot
 
 def test_a_doctor_report_shows_up_in_the_compass_matrix(tmp_path):
     db_path = tmp_path / "reports.db"
+    community_path = tmp_path / "community_reports.jsonl"
     snapshot = EnvironmentSnapshot(gpu_arch="gfx942", rocm_version="7.1.1", kernel_version="6.8.0")
 
-    before = aggregate_reports_by_package("vllm", db_path=db_path)
+    before = aggregate_reports_by_package("vllm", db_path=db_path, community_path=community_path)
     assert before["total_reports"] == 0
 
     result = _submit_report(
@@ -30,11 +31,11 @@ def test_a_doctor_report_shows_up_in_the_compass_matrix(tmp_path):
     )
     assert "error" not in result
 
-    after = aggregate_reports_by_package("vllm", db_path=db_path)
+    after = aggregate_reports_by_package("vllm", db_path=db_path, community_path=community_path)
     assert after["total_reports"] == 1
     assert after["worked"] == 1
     assert after["known_good_combos"] == ["gfx942 + rocm7.1.1 + vllm==0.14.0"]
 
     # A different package's aggregate is unaffected by this report.
-    unrelated = aggregate_reports_by_package("torch", db_path=db_path)
+    unrelated = aggregate_reports_by_package("torch", db_path=db_path, community_path=community_path)
     assert unrelated["total_reports"] == 0

@@ -64,13 +64,23 @@ rocm-doctor check --package torch --report --outcome worked --notes "instalé co
 
 `--outcome` es obligatorio junto con `--report` (`worked` | `failed` | `partial`). La versión del paquete se detecta sola vía metadata de pip; si no se puede (por ejemplo, lo compilaste desde fuente), pásala explícita con `--package-version`.
 
+### Compartirlo con el resto de la comunidad: `--submit`
+
+`--report` por sí solo solo queda en tu máquina. Para que llegue al dataset público (el mecanismo de transporte de terceros que describe `docs/rocm-compass-plan.md` sección 10, "PR/issue automático"), agregá `--submit`:
+
+```bash
+rocm-doctor check --package torch --report --outcome worked --submit
+```
+
+Esto abre un issue en `github.com/BrianGTRxx/rocm-compass` con el reporte embebido como JSON -- usando `gh issue create` si tenés instalado GitHub CLI, o imprimiendo un link pre-llenado para abrir en el navegador si no. Una GitHub Action (`.github/workflows/ingest-reports.yml`) lee ese issue automáticamente, lo valida, lo agrega a [`compass/community_reports.jsonl`](compass/community_reports.jsonl) (versionado, a diferencia de `shared/reports.db`), comenta confirmando, y cierra el issue -- sin que nadie tenga que revisarlo a mano. También podés abrir el issue vos mismo usando la plantilla "Environment report" si preferís no instalar nada.
+
 ## 5. Correr la API del Compass
 
 ```bash
 uvicorn compass.api:app --reload --port 8000
 ```
 
-Abre `http://localhost:8000/docs` para la documentación interactiva (Swagger), `http://localhost:8000/health` para el check rápido, o `http://localhost:8000/packages` para ver la matriz completa -- cada paquete trae su bloque `community_reports` (`total_reports`, `worked`, `failed`, `partial`, `known_good_combos`), calculado en vivo desde `shared/reports.db`. Es decir: cualquier `--report` que guardes con el Doctor aparece aquí sin pasos intermedios -- ese es el loop completo del plan (sección 4.3).
+Abre `http://localhost:8000/docs` para la documentación interactiva (Swagger), `http://localhost:8000/health` para el check rápido, o `http://localhost:8000/packages` para ver la matriz completa -- cada paquete trae su bloque `community_reports` (`total_reports`, `worked`, `failed`, `partial`, `known_good_combos`), calculado en vivo combinando `shared/reports.db` (local) y `compass/community_reports.jsonl` (reportes de terceros ya ingeridos). Cualquier `--report` que guardes, o cualquier reporte de otra persona que la Action ya haya ingerido, aparece acá sin pasos intermedios -- ese es el loop completo del plan (sección 4.3).
 
 ## 6. Correr los tests
 
@@ -92,24 +102,34 @@ Luego, en Obsidian: `Abrir carpeta como vault` → selecciona la carpeta `obsidi
 
 ```
 ROCm_AMD/
+├── .github/
+│   ├── workflows/
+│   │   ├── tests.yml               # pytest en cada push/PR
+│   │   └── ingest-reports.yml       # ingesta automática de reportes (issues -> jsonl)
+│   └── ISSUE_TEMPLATE/
+│       └── environment_report.md    # plantilla para reportar a mano
 ├── doctor/            # Módulo A: CLI + resolver de compatibilidad
 │   ├── compatibility_graph.json
 │   ├── known_issues.json
 │   ├── detectors.py
 │   ├── resolver.py
 │   ├── known_issues.py
-│   └── cli.py          # `rocm-doctor check` (incluye --report)
+│   └── cli.py          # `rocm-doctor check` (incluye --report / --submit)
 ├── compass/           # Módulo B: matriz pública del ecosistema
 │   ├── packages.json
-│   ├── aggregate.py     # lee shared/reports.db -> resumen por paquete
+│   ├── community_reports.jsonl   # reportes de terceros ya ingeridos (versionado)
+│   ├── aggregate.py     # combina shared/reports.db + community_reports.jsonl -> resumen
+│   ├── ingest.py         # parsea el body de un issue y lo agrega al jsonl
 │   ├── scraper.py
 │   └── api.py           # FastAPI: /packages, /packages/{name}
-├── shared/            # esquema + almacenamiento compartido entre A y B
+├── shared/            # esquema + almacenamiento + formato compartido entre A y B
 │   ├── schema.py
 │   ├── store.py         # SQLite (shared/reports.db, no versionado)
-│   └── versions.py       # comparación numérica de versiones (usado por el resolver)
+│   ├── versions.py       # comparación numérica de versiones (usado por el resolver)
+│   └── issue_format.py   # formato del issue que --submit genera y compass/ingest.py espera
 ├── scripts/
-│   └── generate_obsidian_notes.py   # genera obsidian/ a partir de los JSON de datos
+│   ├── generate_obsidian_notes.py   # genera obsidian/ a partir de los JSON de datos
+│   └── ingest_report_issue.py        # corrido por la Action, wrappea compass/ingest.py
 ├── obsidian/          # vault generado (no versionado, ver sección 7)
 ├── tests/
 ├── docs/

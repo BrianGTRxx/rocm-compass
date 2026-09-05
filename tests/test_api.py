@@ -1,15 +1,17 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from compass.api import app, get_db_path
+from compass.api import app, get_community_reports_path, get_db_path
 
 
 @pytest.fixture
 def client(tmp_path):
-    # Without this override, every test here would silently read (and create,
-    # via CREATE TABLE IF NOT EXISTS) the real shared/reports.db -- verified:
-    # running just this file used to leave that file behind in the repo.
+    # Without these overrides, every test here would silently read (and
+    # create) the real shared/reports.db and compass/community_reports.jsonl
+    # -- verified for the former: running just this file used to leave that
+    # file behind in the repo.
     app.dependency_overrides[get_db_path] = lambda: tmp_path / "reports.db"
+    app.dependency_overrides[get_community_reports_path] = lambda: tmp_path / "community_reports.jsonl"
     yield TestClient(app)
     app.dependency_overrides.clear()
 
