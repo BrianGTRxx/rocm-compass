@@ -1,1 +1,0 @@
-{"gpu_arch": "gfx1100", "rocm_version": "7.1.1", "kernel_version": "test-verification-3", "amdgpu_driver_version": null, "package_name": "torch", "package_version": "2.9.0", "outcome": "worked", "notes": "TEST 3: verificando que el fix de env: no rompio el flujo de comentar/cerrar. Seguro de borrar/ignorar.", "source": "community", "reported_at": "2026-09-05T19:14:00+00:00"}
