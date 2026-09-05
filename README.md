@@ -19,7 +19,7 @@ Several projects already tackle CUDA-to-HIP *code* migration (HIPify and a handf
 
 ## Status
 
-The compatibility graph (`torch`, `vllm`) and the 12-package Compass matrix hold real, sourced data; the Doctor CLI + resolver run end-to-end; and the full data loop works, including third-party submissions -- `rocm-doctor check --report --submit` opens a GitHub issue, `.github/workflows/ingest-reports.yml` validates and merges it into `compass/community_reports.jsonl` automatically, and `compass/api.py` serves the combined result. Still ahead: broader graph coverage (`flash-attn` deliberately skipped so far -- no single citable official version pin exists yet across the mainline package or its various ROCm forks/wheels) and a real weekly scraper (`compass/scraper.py` is still a skeleton).
+The compatibility graph (`torch`, `vllm`) and the 12-package Compass matrix hold real, sourced data; the Doctor CLI + resolver run end-to-end; and the full data loop works, including third-party submissions -- `rocm-doctor check --report --submit` opens a GitHub issue, `.github/workflows/ingest-reports.yml` validates and merges it into `compass/community_reports.jsonl` automatically, and `compass/api.py` serves the combined result. A weekly scraper (`.github/workflows/scrape-rocm-mentions.yml`) also flags new ROCm-mentioning releases across all 12 tracked packages for manual review. Still ahead: broader graph coverage (`flash-attn` deliberately skipped so far -- no single citable official version pin exists yet across the mainline package or its various ROCm forks/wheels).
 
 ## Quickstart
 
@@ -39,6 +39,10 @@ Full setup (venv, tests, the `--report` data loop, the generated Obsidian vault)
 ## Contributing
 
 Community-reported environment results are what make the Compass matrix real data instead of a guess. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## Security
+
+Found a vulnerability? See [`SECURITY.md`](SECURITY.md) for how to report it privately.
 
 ## License
 
