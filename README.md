@@ -47,3 +47,11 @@ Found a vulnerability? See [`SECURITY.md`](SECURITY.md) for how to report it pri
 ## License
 
 [MIT](LICENSE)
+
+## About this project and how it was built
+
+I'm an electronics engineer, not a software engineer by trade -- AMD and ROCm are a personal interest of mine, not my day job. The code in this repo was written with AI assistance, working alongside Claude Code (Anthropic's coding agent) for the implementation, the research verification behind the compatibility data, and most of the day-to-day engineering decisions.
+
+What I brought to it myself: the domain grounding from my electronics engineering degree, and the rest self-taught and hands-on -- reading AMD's actual documentation, deciding what was worth building and what wasn't, and enough autonomous learning in software development to push back when something looked wrong instead of accepting it at face value.
+
+I'm saying this openly because I think transparency matters as much as the tool itself, especially in a community that's going to look closely at the code. If that changes how you weigh a bug report or a design decision here, that's fair -- and if you think this approach produced something genuinely useful anyway, that's worth knowing too.
