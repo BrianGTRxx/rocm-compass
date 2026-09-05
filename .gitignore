@@ -25,3 +25,6 @@ shared/reports.db
 # Internal planning doc (rationale, roadmap, personal context) -- not meant
 # for public GitHub. The README carries what a visitor actually needs.
 /docs/
+
+# Draft copy for sharing elsewhere (Reddit, etc.) -- not repo content.
+/reddit_post_draft.md
