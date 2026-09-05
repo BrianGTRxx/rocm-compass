@@ -1,1 +1,0 @@
-{"gpu_arch": "gfx942", "rocm_version": "7.0.0", "kernel_version": "test-verification-4", "amdgpu_driver_version": null, "package_name": "vllm", "package_version": "0.14.0", "outcome": "worked", "notes": "TEST 4: verificando que el fix de seguridad sigue funcionando con github-script v9. Seguro de borrar/ignorar.", "source": "community", "reported_at": "2026-09-05T19:27:00+00:00"}
