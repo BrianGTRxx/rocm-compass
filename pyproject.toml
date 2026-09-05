@@ -9,6 +9,10 @@ dependencies = [
     "typer>=0.12",
     "fastapi>=0.110",
     "uvicorn>=0.29",
+    # Explicit floor, not just relying on FastAPI's own (intentionally loose)
+    # transitive requirement -- CVE-2026-48710 ("BadHost", GHSA-86qp-5c8j-p5mr)
+    # is a Host-header validation bypass in Starlette 0.8.3-1.0.0, fixed in 1.0.1.
+    "starlette>=1.0.1",
 ]
 
 [project.optional-dependencies]

@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [master]
 
+# Least-privilege: this job only checks out code and runs tests, it never
+# needs to write anything. The repo's own default is already read-only, but
+# stating it here means that stays true regardless of what the repo-wide
+# default gets changed to later.
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
