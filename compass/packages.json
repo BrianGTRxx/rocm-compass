@@ -1,0 +1,90 @@
+{
+  "$comment": "Real ROCm support status per package, researched 2026-09-05 from official docs/repos and real GitHub issues -- replaces the initial pending_research placeholders. status values: 'official' (upstream/first-party, ready to pip install), 'partial' (works but via a fork, extra flags, or with known rough edges), 'unsupported' (no meaningful ROCm path found).",
+  "schema_version": 2,
+  "packages": [
+    {
+      "name": "torch",
+      "status": "official",
+      "last_checked": "2026-09-05",
+      "source": "https://rocm.docs.amd.com/en/docs-7.2.3/compatibility/ml-compatibility/pytorch-compatibility.html",
+      "notes": "First-party wheels at download.pytorch.org/whl/rocm{6.4,7.1,7.2} and repo.radeon.com. torch 2.4.0+ROCm 6.3.2 called out as officially production-supported; AMD notes PyTorch.org nightly wheels are 'not tested extensively by AMD' compared to repo.radeon.com builds."
+    },
+    {
+      "name": "triton",
+      "status": "official",
+      "last_checked": "2026-09-05",
+      "source": "https://github.com/triton-lang/triton/releases",
+      "notes": "AMD's ROCm backend is merged upstream into triton-lang/triton (not a separate fork). Triton 3.7.0 improved flash/linear-attention perf on CDNA3. Known gap: a codegen bug in the AMD backend affects fused-MoE on consumer RDNA3 (gfx1100), tracked at sgl-project/sglang#30245 -- datacenter MI300X/MI325X also lack pre-tuned MoE configs that exist for NVIDIA."
+    },
+    {
+      "name": "flash-attn",
+      "status": "partial",
+      "last_checked": "2026-09-05",
+      "source": "https://github.com/ROCm/flash-attention",
+      "notes": "The mainline Dao-AILab/flash-attention repo does NOT support AMD. Use the ROCm/flash-attention fork instead, which ships a composable_kernel (CK, default) backend and a Triton backend covering MI200/MI250/MI300/MI355 and RDNA3/4. Any project that hard-depends on the Dao-AILab package name may need patching to point at the fork."
+    },
+    {
+      "name": "xformers",
+      "status": "partial",
+      "last_checked": "2026-09-05",
+      "source": "https://github.com/EmbeddedLLM/xformers-rocm",
+      "notes": "No solid native AMD support in mainline xformers historically; community forks exist (EmbeddedLLM/xformers-rocm, stripped to flash-attention-v2-for-ROCm only). Axolotl's own AMD HPC guide states plainly: 'xformers appears to be incompatible with ROCm.' AMD's own AITER repo is emerging as the recommended replacement for attention kernels on ROCm rather than getting xformers itself working."
+    },
+    {
+      "name": "bitsandbytes",
+      "status": "partial",
+      "last_checked": "2026-09-05",
+      "source": "https://github.com/bitsandbytes-foundation/bitsandbytes/discussions/1339",
+      "notes": "Official multi-backend refactor added AMD ROCm support, currently at alpha/experimental status with preview wheels on PyPI for Linux x86-64. A parallel ROCm/bitsandbytes fork (rocm_enabled_multi_backend branch) tracks the same work and upstreams it. Installation issues are still commonly reported (bitsandbytes-foundation/bitsandbytes#1608)."
+    },
+    {
+      "name": "deepspeed",
+      "status": "partial",
+      "last_checked": "2026-09-05",
+      "source": "https://github.com/deepspeedai/DeepSpeed/issues/7590",
+      "notes": "Official AMD support exists (ROCm 6.0 release notes list DeepSpeed as supported), best tested on MI100/MI200. Requires hipcc to build C++/HIP extensions. Real friction reported: users repeatedly ask 'which ROCm version does DeepSpeed actually support' (issue #7590 is open with no definitive answer), and Axolotl's AMD HPC guide reports DeepSpeed simply 'did not work at the time of testing' on their setup, recommending FSDP instead."
+    },
+    {
+      "name": "vllm",
+      "status": "official",
+      "last_checked": "2026-09-05",
+      "source": "https://rocm.docs.amd.com/en/7.13.0-preview/ai-inference/vllm.html",
+      "notes": "Official AMD-provided wheel: `pip install vllm==0.14.0+rocm700 --extra-index-url https://wheels.vllm.ai/rocm/0.14.0/rocm700`. AMD also publishes prebuilt Docker images per ROCm/torch/vLLM combo (e.g. rocm7.13.0_gfx950-dcgpu_..._vllm_0.19.1). Listed in AMD's own AI ecosystem docs as a supported inference framework."
+    },
+    {
+      "name": "sglang",
+      "status": "official",
+      "last_checked": "2026-09-05",
+      "source": "https://docs.sglang.io/docs/hardware-platforms/amd_gpu",
+      "notes": "Comprehensive official support for AMD Instinct (MI300X, MI325X, upcoming MI350X); requires ROCm 6.3+. Initial Radeon (consumer) support only landed in ROCm 7.14 and needs manual workarounds (disable AITER, unset SGLANG_ROCM_FUSED_DECODE_MLA) -- treat Instinct support as solid and Radeon support as early/partial."
+    },
+    {
+      "name": "apex",
+      "status": "partial",
+      "last_checked": "2026-09-05",
+      "source": "https://github.com/ROCm/apex",
+      "notes": "No ROCm support in upstream NVIDIA/apex. AMD maintains its own ROCm/apex fork supporting both python-only and extension builds via `--cuda_ext` (distributed_adam, distributed_lamb, bnp, xentropy). For torch < 1.8, building from source isn't supported -- use the packaged ROCm-Apex v0.3 release instead."
+    },
+    {
+      "name": "torch-xla",
+      "status": "unsupported",
+      "last_checked": "2026-09-05",
+      "source": "https://github.com/pytorch/xla",
+      "notes": "No evidence of a ROCm/AMD PJRT backend for torch_xla -- its PJRT plugins target Google TPU, CPU, and CUDA. Not applicable to ROCm today; kept in the tracker as 'unsupported' rather than removed, so the matrix visibly answers the question instead of staying silent on it. Tracked as 'torch-xla' (its real PyPI distribution name) -- it was previously misnamed 'xla', which would have silently broken `--report`'s pip-metadata lookup even when the package was correctly installed."
+    },
+    {
+      "name": "unsloth",
+      "status": "partial",
+      "last_checked": "2026-09-05",
+      "source": "https://unsloth.ai/docs/get-started/install/amd",
+      "notes": "Active AMD ROCm/HIP support added across the installer and hardware detection (unslothai/unsloth#4720), with QLoRA training verified working on Windows (RX 9060 XT, Llama-3.2-1B). Still unstable in places: open bugs include HIP-accelerator detection failures after a Studio update (#5180), no Docker AMD support yet (#5405), and a report that ROCm/AMD stopped working with the latest Studio build as of mid-2026 (#6308)."
+    },
+    {
+      "name": "axolotl",
+      "status": "partial",
+      "last_checked": "2026-09-05",
+      "source": "https://docs.axolotl.ai/docs/amd_hpc.html",
+      "notes": "Official axolotl-ai-cloud docs include an AMD HPC guide (ROCm 5.7.1, gfx90a/MI250X, `pip install torch --index-url .../whl/rocm5.7`) but call out real gaps: 'Deepspeed did not work at the time of testing' (use FSDP instead) and 'xformers appears to be incompatible with ROCm'. A separate community fork, AI-DarwinLabs/axolotl (amd-support branch), targets newer ROCm 6.2+ on MI250/MI300."
+    }
+  ]
+}

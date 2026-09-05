@@ -1,0 +1,45 @@
+{
+  "$comment": "Known environment misconfigurations that the compatibility graph doesn't model (they're not a version mismatch, they're a broken permission/env-var/ABI assumption). Each entry is matched against raw log text (e.g. `rocminfo`/`rocm-smi` stderr, or a pasted error) by substring/regex. Researched and sourced 2026-09-05 from real GitHub issues.",
+  "schema_version": 1,
+  "issues": [
+    {
+      "id": "kfd-permission-denied",
+      "match_pattern": "Unable to open /dev/kfd read-write",
+      "symptom": "`rocminfo` (or any ROCm tool) fails immediately with a permission error, even though the GPU and driver are otherwise fine.",
+      "cause": "On most distros, `/dev/kfd` is owned by the `render` group (older docs/packages sometimes only mention `video`). If the current user isn't a member of that group, every ROCm tool fails at the same first step.",
+      "fix": "sudo usermod -aG render,video $LOGNAME   # then log out and back in (or reboot) for the group change to take effect",
+      "severity": "blocking",
+      "sources": [
+        "https://github.com/ROCm/rocminfo/issues/34",
+        "https://github.com/ROCm/ROCm/issues/1798",
+        "https://github.com/RadeonOpenCompute/ROCm_Documentation/issues/39"
+      ]
+    },
+    {
+      "id": "hsa-override-gfx-version-consumer-gpu",
+      "match_pattern": "HSA_OVERRIDE_GFX_VERSION",
+      "symptom": "A consumer Radeon GPU (e.g. RX 6600/6600 XT, gfx1032) isn't in ROCm's officially supported list, so `rocminfo`/PyTorch don't recognize it even though it's in the same architecture family as a supported card.",
+      "cause": "ROCm gates support by exact gfx target. Cards in the same family as a supported one (e.g. gfx1032 vs. supported gfx1030) can often be forced to work by overriding the reported ISA version, at the cost of running an untested configuration.",
+      "fix": "export HSA_OVERRIDE_GFX_VERSION=10.3.0   # maps gfx1032 -> gfx1030; adjust the target version to the nearest *supported* gfx in the same family",
+      "severity": "workaround",
+      "caveats": "Does not work on Windows ROCm builds (the override is a no-op there). On gfx1031/gfx1032 specifically, ROCm 6.4.3+ and the 7.2.x line have shipped builds where this override loads the model but then segfaults on the first prompt, with no confirmed fix as of this research date -- treat as 'may not work', not a guaranteed fix.",
+      "severity_note": "workaround, not a real fix -- unsupported configuration",
+      "sources": [
+        "https://github.com/ollama/ollama/issues/3107",
+        "https://github.com/ROCm/ROCm/issues/5069",
+        "https://github.com/ROCm/TheRock/issues/1719"
+      ]
+    },
+    {
+      "id": "torch-hip-version-string-abi-break",
+      "match_pattern": "torch\\.version\\.hip",
+      "symptom": "A library that inspects `torch.version.hip` to detect the ROCm ABI (bitsandbytes, ComfyUI, and others do this) misdetects the version or crashes after upgrading to a build from AMD's newer TheRock build system.",
+      "cause": "TheRock's build changed the format of `torch.version.hip` (e.g. from a `7.2.x`-style string to `7.13.x`-style), which breaks any downstream code that parses it expecting the old format. This is an active upstream regression, not something the user misconfigured.",
+      "fix": "No user-side fix -- pin the previously-working torch build for the affected library until it's updated to read the new `torch.version.hip` format (or `torch.version.rocm`, added as a more stable alternative), or check if the downstream project has already shipped a compatibility patch.",
+      "severity": "advisory",
+      "sources": [
+        "https://github.com/ROCm/TheRock/issues/5425"
+      ]
+    }
+  ]
+}

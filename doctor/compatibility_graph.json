@@ -1,0 +1,189 @@
+{
+  "$comment": "Known-good configuration nodes and compatible upgrade paths, sourced from AMD's official ROCm docs and official pip wheel commands (torch package only, for now -- other packages need their own node chains, see docs/rocm-compass-plan.md Fase 0 backlog). Replaces the placeholder/example data from the initial scaffold. Researched and populated 2026-09-05.",
+  "schema_version": 2,
+  "sources": {
+    "compat_matrix_7.0.1": "https://rocm.docs.amd.com/en/docs-7.0.1/compatibility/compatibility-matrix.html",
+    "pytorch_compat_7.2.3": "https://rocm.docs.amd.com/en/docs-7.2.3/compatibility/ml-compatibility/pytorch-compatibility.html",
+    "pytorch_install_6.4.3": "https://rocm.docs.amd.com/projects/install-on-linux/en/docs-6.4.3/install/3rd-party/pytorch-install.html",
+    "supported_gpus_therock": "https://github.com/ROCm/TheRock/blob/main/SUPPORTED_GPUS.md"
+  },
+  "nodes": [
+    {
+      "id": "rocm6.3.2-gfx90a-torch2.4.0",
+      "gpu_arch": "gfx90a",
+      "rocm_version": "6.3.2",
+      "kernel_version": "5.15.x / 6.8.x (Ubuntu 22.04.5) or 6.1.0 (Debian 12)",
+      "amdgpu_driver_version": "6.4.x / 6.3.x / 6.2.x / 6.1.x",
+      "package": {"name": "torch", "version": "2.4.0"},
+      "source": "amd_official_docs",
+      "notes": "torch 2.4.0 + ROCm 6.3.2 is explicitly called out as officially production-supported (see pytorch_compat_7.2.3).",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm6.3.2-gfx942-torch2.4.0",
+      "gpu_arch": "gfx942",
+      "rocm_version": "6.3.2",
+      "kernel_version": "5.15.x / 6.8.x (Ubuntu 22.04.5) or 6.1.0 (Debian 12)",
+      "amdgpu_driver_version": "6.4.x / 6.3.x / 6.2.x / 6.1.x",
+      "package": {"name": "torch", "version": "2.4.0"},
+      "source": "amd_official_docs",
+      "notes": "Same production-supported pairing as gfx90a; gfx942 (MI300A/X) was already a supported target in ROCm 6.3.",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm6.3.2-gfx1100-torch2.4.0",
+      "gpu_arch": "gfx1100",
+      "rocm_version": "6.3.2",
+      "kernel_version": "5.15.x / 6.8.x (Ubuntu 22.04.5)",
+      "amdgpu_driver_version": "6.4.x / 6.3.x / 6.2.x / 6.1.x",
+      "package": {"name": "torch", "version": "2.4.0"},
+      "source": "amd_official_docs",
+      "notes": "gfx1100 (Radeon RX 7900 series, RDNA3) is release-ready per TheRock's supported GPU list.",
+      "verified_at": "2026-09-05"
+    },
+
+    {
+      "id": "rocm6.4.3-gfx90a-torch2.9.0",
+      "gpu_arch": "gfx90a",
+      "rocm_version": "6.4.3",
+      "kernel_version": "5.15.x / 6.8.x (Ubuntu 22.04.5) or Ubuntu 24.04.2",
+      "amdgpu_driver_version": "6.4.x / 6.3.x / 6.2.x / 6.1.x",
+      "package": {"name": "torch", "version": "2.9.0"},
+      "source": "amd_official_docs",
+      "notes": "Exact pip command found: `pip install torch==2.9.0 torchvision==0.24.0 torchaudio==2.9.0 --index-url https://download.pytorch.org/whl/rocm6.4`.",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm6.4.3-gfx942-torch2.9.0",
+      "gpu_arch": "gfx942",
+      "rocm_version": "6.4.3",
+      "kernel_version": "5.15.x / 6.8.x (Ubuntu 22.04.5) or Ubuntu 24.04.2",
+      "amdgpu_driver_version": "6.4.x / 6.3.x / 6.2.x / 6.1.x",
+      "package": {"name": "torch", "version": "2.9.0"},
+      "source": "amd_official_docs",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm6.4.3-gfx1100-torch2.9.0",
+      "gpu_arch": "gfx1100",
+      "rocm_version": "6.4.3",
+      "kernel_version": "5.15.x / 6.8.x (Ubuntu 22.04.5) or Ubuntu 24.04.2",
+      "amdgpu_driver_version": "6.4.x / 6.3.x / 6.2.x / 6.1.x",
+      "package": {"name": "torch", "version": "2.9.0"},
+      "source": "amd_official_docs",
+      "verified_at": "2026-09-05"
+    },
+
+    {
+      "id": "rocm7.0.1-gfx90a-torch2.8.0",
+      "gpu_arch": "gfx90a",
+      "rocm_version": "7.0.1",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3) or 5.15.x / 6.8.x (Ubuntu 22.04.5)",
+      "amdgpu_driver_version": "30.10.1 / 30.10 / 6.4.x / 6.3.x / 6.2.x",
+      "package": {"name": "torch", "version": "2.8.0"},
+      "source": "amd_official_docs",
+      "notes": "Feature-update docs list 'PyTorch 2.7/2.8 with ROCm 7.0' -- 2.8.0 used as the representative pairing.",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm7.0.1-gfx942-torch2.8.0",
+      "gpu_arch": "gfx942",
+      "rocm_version": "7.0.1",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3) or 5.15.x / 6.8.x (Ubuntu 22.04.5)",
+      "amdgpu_driver_version": "30.10.1 / 30.10 / 6.4.x / 6.3.x / 6.2.x",
+      "package": {"name": "torch", "version": "2.8.0"},
+      "source": "amd_official_docs",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm7.0.1-gfx1100-torch2.8.0",
+      "gpu_arch": "gfx1100",
+      "rocm_version": "7.0.1",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3) or 5.15.x / 6.8.x (Ubuntu 22.04.5)",
+      "amdgpu_driver_version": "30.10.1 / 30.10 / 6.4.x / 6.3.x / 6.2.x",
+      "package": {"name": "torch", "version": "2.8.0"},
+      "source": "amd_official_docs",
+      "verified_at": "2026-09-05"
+    },
+
+    {
+      "id": "rocm7.1.1-gfx90a-torch2.9.0",
+      "gpu_arch": "gfx90a",
+      "rocm_version": "7.1.1",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3)",
+      "amdgpu_driver_version": "30.10.1 / 30.10",
+      "package": {"name": "torch", "version": "2.9.0"},
+      "source": "amd_official_docs",
+      "notes": "Feature-update docs explicitly state 'PyTorch 2.9 with ROCm 7.1.1'.",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm7.1.1-gfx942-torch2.9.0",
+      "gpu_arch": "gfx942",
+      "rocm_version": "7.1.1",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3)",
+      "amdgpu_driver_version": "30.10.1 / 30.10",
+      "package": {"name": "torch", "version": "2.9.0"},
+      "source": "amd_official_docs",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm7.1.1-gfx1100-torch2.9.0",
+      "gpu_arch": "gfx1100",
+      "rocm_version": "7.1.1",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3)",
+      "amdgpu_driver_version": "30.10.1 / 30.10",
+      "package": {"name": "torch", "version": "2.9.0"},
+      "source": "amd_official_docs",
+      "verified_at": "2026-09-05"
+    },
+
+    {
+      "id": "rocm7.2.1-gfx90a-torch2.9.0",
+      "gpu_arch": "gfx90a",
+      "rocm_version": "7.2.1",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3)",
+      "amdgpu_driver_version": "30.10.1 / 30.10",
+      "package": {"name": "torch", "version": "2.9.0"},
+      "source": "amd_official_docs",
+      "notes": "Feature-update docs state 'PyTorch 2.9 with ROCm 7.2.1'. A separate nightly wheel (`--index-url .../whl/nightly/rocm7.2`) also exists but AMD's own docs warn nightlies 'are not tested extensively by AMD as the wheels change regularly' -- that path is intentionally not modeled as a graph node.",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm7.2.1-gfx942-torch2.9.0",
+      "gpu_arch": "gfx942",
+      "rocm_version": "7.2.1",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3)",
+      "amdgpu_driver_version": "30.10.1 / 30.10",
+      "package": {"name": "torch", "version": "2.9.0"},
+      "source": "amd_official_docs",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm7.2.1-gfx1100-torch2.9.0",
+      "gpu_arch": "gfx1100",
+      "rocm_version": "7.2.1",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3)",
+      "amdgpu_driver_version": "30.10.1 / 30.10",
+      "package": {"name": "torch", "version": "2.9.0"},
+      "source": "amd_official_docs",
+      "verified_at": "2026-09-05"
+    }
+  ],
+  "edges": [
+    { "from": "rocm6.3.2-gfx90a-torch2.4.0",  "to": "rocm6.4.3-gfx90a-torch2.9.0",  "cost": 2, "$comment": "point upgrade within compatible OS/kernel range, torch version jump but no arch/driver family change" },
+    { "from": "rocm6.4.3-gfx90a-torch2.9.0",  "to": "rocm7.0.1-gfx90a-torch2.8.0",  "cost": 4, "$comment": "major ROCm version bump, may require newer Ubuntu (24.04.3) and newer amdgpu driver (30.10.x)" },
+    { "from": "rocm7.0.1-gfx90a-torch2.8.0",  "to": "rocm7.1.1-gfx90a-torch2.9.0",  "cost": 2 },
+    { "from": "rocm7.1.1-gfx90a-torch2.9.0",  "to": "rocm7.2.1-gfx90a-torch2.9.0",  "cost": 3, "$comment": "newest release line, thinner community track record than 7.1.x" },
+
+    { "from": "rocm6.3.2-gfx942-torch2.4.0",  "to": "rocm6.4.3-gfx942-torch2.9.0",  "cost": 2 },
+    { "from": "rocm6.4.3-gfx942-torch2.9.0",  "to": "rocm7.0.1-gfx942-torch2.8.0",  "cost": 4 },
+    { "from": "rocm7.0.1-gfx942-torch2.8.0",  "to": "rocm7.1.1-gfx942-torch2.9.0",  "cost": 2 },
+    { "from": "rocm7.1.1-gfx942-torch2.9.0",  "to": "rocm7.2.1-gfx942-torch2.9.0",  "cost": 3 },
+
+    { "from": "rocm6.3.2-gfx1100-torch2.4.0", "to": "rocm6.4.3-gfx1100-torch2.9.0", "cost": 2 },
+    { "from": "rocm6.4.3-gfx1100-torch2.9.0", "to": "rocm7.0.1-gfx1100-torch2.8.0", "cost": 4 },
+    { "from": "rocm7.0.1-gfx1100-torch2.8.0", "to": "rocm7.1.1-gfx1100-torch2.9.0", "cost": 2 },
+    { "from": "rocm7.1.1-gfx1100-torch2.9.0", "to": "rocm7.2.1-gfx1100-torch2.9.0", "cost": 3 }
+  ]
+}

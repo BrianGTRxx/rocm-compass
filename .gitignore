@@ -1,0 +1,20 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+.venv/
+venv/
+
+shared/reports.db
+*.db-journal
+
+.vscode/
+.idea/
+
+# Generated Obsidian vault (scripts/generate_obsidian_notes.py) -- derived
+# entirely from doctor/compatibility_graph.json, compass/packages.json and
+# doctor/known_issues.json. Regenerate instead of committing/editing by hand.
+/obsidian/
