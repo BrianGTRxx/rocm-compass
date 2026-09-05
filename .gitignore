@@ -28,3 +28,4 @@ shared/reports.db
 
 # Draft copy for sharing elsewhere (Reddit, etc.) -- not repo content.
 /reddit_post_draft.md
+/reddit_reply_draft.md
