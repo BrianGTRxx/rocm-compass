@@ -45,8 +45,16 @@ jobs:
         if: steps.scan.outputs.has_findings == 'true' && steps.existing.outputs.count == '0'
         env:
           GH_TOKEN: ${{ github.token }}
+          # Passed as an env var instead of `${{ }}`-interpolated straight into
+          # this run: block: SUMMARY embeds tag names/URLs from tracked
+          # packages' own GitHub releases, which aren't fully within this
+          # repo's control. `"$SUMMARY"` is a single shell-quoted argument;
+          # `${{ steps.scan.outputs.summary }}` inside the quotes would instead
+          # splice raw text into the script before bash ever parses it --
+          # a `"` in that text would break out of the --body argument.
+          SUMMARY: ${{ steps.scan.outputs.summary }}
         run: |
           gh issue create \
             --title "Weekly ROCm mention scan: new findings" \
-            --body "${{ steps.scan.outputs.summary }}" \
+            --body "$SUMMARY" \
             --label rocm-mention-scan
