@@ -1,0 +1,52 @@
+name: Scan for new ROCm mentions
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"  # every Monday at 06:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -e .
+
+      - name: Scan for new ROCm mentions
+        id: scan
+        run: |
+          SUMMARY=$(python scripts/run_scraper_and_report.py)
+          echo "summary<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$SUMMARY" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "has_findings=$([ -n "$SUMMARY" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Check for an existing open issue
+        # Avoids opening a new duplicate issue every week for the same
+        # not-yet-reviewed finding -- compass/packages.json's last_checked
+        # only moves when a maintainer actually reviews and updates it.
+        if: steps.scan.outputs.has_findings == 'true'
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT=$(gh issue list --label rocm-mention-scan --state open --json number --jq 'length')
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+      - name: Open an issue with the findings
+        if: steps.scan.outputs.has_findings == 'true' && steps.existing.outputs.count == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Weekly ROCm mention scan: new findings" \
+            --body "${{ steps.scan.outputs.summary }}" \
+            --label rocm-mention-scan
