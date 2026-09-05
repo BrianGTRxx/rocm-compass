@@ -112,7 +112,7 @@ def generate_architecture_hubs(by_arch: dict[str, list[str]]) -> None:
         _write(VAULT / "Arquitecturas" / f"{arch}.md", "\n".join(lines) + "\n")
 
 
-def generate_packages(packages_data: dict, package_has_graph_nodes: set[str]) -> None:
+def generate_packages(packages_data: dict, package_archs: dict[str, set[str]]) -> None:
     for package in packages_data["packages"]:
         name = package["name"]
         status_label = STATUS_LABELS.get(package["status"], package["status"])
@@ -130,8 +130,13 @@ def generate_packages(packages_data: dict, package_has_graph_nodes: set[str]) ->
             "## Nodos en el grafo de compatibilidad",
             "",
         ]
-        if name in package_has_graph_nodes:
-            lines.append("Este paquete ya tiene nodos reales en el grafo de compatibilidad, agrupados por arquitectura: [[gfx90a]], [[gfx942]], [[gfx1100]].")
+        archs = package_archs.get(name)
+        if archs:
+            # Only link architectures this package actually has nodes for --
+            # linking all three regardless (the previous behavior) claimed
+            # coverage (e.g. gfx1100) that didn't exist for vllm.
+            arch_links = ", ".join(f"[[{arch}]]" for arch in sorted(archs))
+            lines.append(f"Este paquete ya tiene nodos reales en el grafo de compatibilidad, para: {arch_links}.")
         else:
             lines.append("Todavía no tiene nodos en el grafo de compatibilidad (`doctor/compatibility_graph.json`) -- por ahora solo está trackeado aquí, en el Compass. Pendiente para el backlog de Fase 0.")
 
@@ -201,11 +206,13 @@ def main() -> None:
     packages_data = load_json("compass/packages.json")
     issues_data = load_json("doctor/known_issues.json")
 
-    package_has_graph_nodes = {node["package"]["name"] for node in graph["nodes"]}
+    package_archs: dict[str, set[str]] = {}
+    for node in graph["nodes"]:
+        package_archs.setdefault(node["package"]["name"], set()).add(node["gpu_arch"])
 
     by_arch = generate_graph_nodes(graph)
     generate_architecture_hubs(by_arch)
-    generate_packages(packages_data, package_has_graph_nodes)
+    generate_packages(packages_data, package_archs)
     generate_known_issues(issues_data)
     generate_index(by_arch, packages_data, issues_data)
 

@@ -123,7 +123,13 @@ def resolve(snapshot: EnvironmentSnapshot, package_name: str) -> ResolutionStep 
     the detected snapshot; Dijkstra then finds, for each node, the cheapest
     combination of "how far is this from what I detected" plus "how many
     edges to get there from a plausible entry point". The returned cost is
-    the minimum of that over every node matching `package_name`.
+    the minimum of that over every node matching `package_name` **on the
+    detected gpu_arch** -- unlike a ROCm/kernel/package version, the GPU
+    architecture isn't something a version change can fix, so a node for a
+    different arch is never a valid recommendation, no matter how cheap the
+    graph makes it look. (Found the hard way: without this filter, a gfx1100
+    user asking about a package only modeled for gfx90a/gfx942 got told to
+    move to gfx90a -- nonsensical advice, since you can't "upgrade" hardware.)
     """
     nodes, adjacency = load_graph()
     if not nodes:
@@ -138,7 +144,7 @@ def resolve(snapshot: EnvironmentSnapshot, package_name: str) -> ResolutionStep 
     candidates = [
         (node_id, cost)
         for node_id, cost in reachable_costs.items()
-        if nodes[node_id].package_name == package_name
+        if nodes[node_id].package_name == package_name and nodes[node_id].gpu_arch == snapshot.gpu_arch
     ]
     if not candidates:
         return None

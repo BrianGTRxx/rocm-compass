@@ -48,6 +48,28 @@ def test_unknown_package_has_no_resolution():
     assert resolution is None
 
 
+def test_vllm_resolves_on_its_supported_architectures():
+    snapshot = EnvironmentSnapshot(gpu_arch="gfx942", rocm_version="7.0.0", kernel_version="unknown")
+
+    resolution = resolve(snapshot, "vllm")
+
+    assert resolution is not None
+    assert resolution.target.id == "rocm7.0.0-gfx942-vllm0.14.0"
+    assert resolution.target.package_version == "0.14.0"
+
+
+def test_vllm_has_no_resolution_on_an_architecture_not_modeled_yet():
+    """vllm is only modeled for gfx90a/gfx942 (AMD's documented Instinct
+    deployment target) -- gfx1100 (Radeon) was deliberately left out rather
+    than assumed to work the same way. See compatibility_graph.json notes.
+    """
+    snapshot = EnvironmentSnapshot(gpu_arch="gfx1100", rocm_version="7.0.0", kernel_version="unknown")
+
+    resolution = resolve(snapshot, "vllm")
+
+    assert resolution is None
+
+
 def test_a_rocm_version_absent_from_the_graph_never_reports_zero_cost():
     """Regression test: the old single-entry-point algorithm picked whichever
     node was "closest" by a flat heuristic and then ran Dijkstra from it at

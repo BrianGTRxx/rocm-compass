@@ -1,11 +1,12 @@
 {
-  "$comment": "Known-good configuration nodes and compatible upgrade paths, sourced from AMD's official ROCm docs and official pip wheel commands (torch package only, for now -- other packages need their own node chains, see docs/rocm-compass-plan.md Fase 0 backlog). Replaces the placeholder/example data from the initial scaffold. Researched and populated 2026-09-05.",
+  "$comment": "Known-good configuration nodes and compatible upgrade paths, sourced from AMD's official ROCm docs and official pip wheel commands. torch covers gfx90a/gfx942/gfx1100 across 5 ROCm releases; vllm covers gfx90a/gfx942 only (its officially-documented deployment target is AMD Instinct, not confirmed the same way for Radeon/gfx1100 -- not modeled to avoid overclaiming). flash-attn is deliberately NOT modeled here yet: there's no single canonical 'flash-attn==X.Y.Z + ROCm A.B.C' pairing to cite -- the mainline Dao-AILab package doesn't support AMD at all, and the ROCm fork plus several unofficial wheel distributors (TesslateAI, EmbeddedLLM, others) don't converge on one official version pin. See compass/packages.json for its (real, sourced) status without a fabricated version number. Researched and populated 2026-09-05.",
   "schema_version": 2,
   "sources": {
     "compat_matrix_7.0.1": "https://rocm.docs.amd.com/en/docs-7.0.1/compatibility/compatibility-matrix.html",
     "pytorch_compat_7.2.3": "https://rocm.docs.amd.com/en/docs-7.2.3/compatibility/ml-compatibility/pytorch-compatibility.html",
     "pytorch_install_6.4.3": "https://rocm.docs.amd.com/projects/install-on-linux/en/docs-6.4.3/install/3rd-party/pytorch-install.html",
-    "supported_gpus_therock": "https://github.com/ROCm/TheRock/blob/main/SUPPORTED_GPUS.md"
+    "supported_gpus_therock": "https://github.com/ROCm/TheRock/blob/main/SUPPORTED_GPUS.md",
+    "vllm_rocm_preview": "https://rocm.docs.amd.com/en/7.13.0-preview/ai-inference/vllm.html"
   },
   "nodes": [
     {
@@ -167,6 +168,29 @@
       "amdgpu_driver_version": "30.10.1 / 30.10",
       "package": {"name": "torch", "version": "2.9.0"},
       "source": "amd_official_docs",
+      "verified_at": "2026-09-05"
+    },
+
+    {
+      "id": "rocm7.0.0-gfx90a-vllm0.14.0",
+      "gpu_arch": "gfx90a",
+      "rocm_version": "7.0.0",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3) or 5.15.x / 6.8.x (Ubuntu 22.04.5)",
+      "amdgpu_driver_version": "30.10.1 / 30.10 / 6.4.x / 6.3.x / 6.2.x",
+      "package": {"name": "vllm", "version": "0.14.0"},
+      "source": "amd_official_docs",
+      "notes": "Official AMD-provided wheel: `pip install vllm==0.14.0+rocm700 --extra-index-url https://wheels.vllm.ai/rocm/0.14.0/rocm700`. AMD's own docs frame vLLM's supported deployment target as AMD Instinct (not Radeon/consumer) -- gfx1100 deliberately not modeled here to avoid overclaiming.",
+      "verified_at": "2026-09-05"
+    },
+    {
+      "id": "rocm7.0.0-gfx942-vllm0.14.0",
+      "gpu_arch": "gfx942",
+      "rocm_version": "7.0.0",
+      "kernel_version": "6.8.x / 6.14.x (Ubuntu 24.04.3) or 5.15.x / 6.8.x (Ubuntu 22.04.5)",
+      "amdgpu_driver_version": "30.10.1 / 30.10 / 6.4.x / 6.3.x / 6.2.x",
+      "package": {"name": "vllm", "version": "0.14.0"},
+      "source": "amd_official_docs",
+      "notes": "Same official wheel as the gfx90a pairing; gfx942 (MI300X) is AMD's primary vLLM deployment target per their own docs.",
       "verified_at": "2026-09-05"
     }
   ],
