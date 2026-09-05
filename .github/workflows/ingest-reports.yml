@@ -41,7 +41,7 @@ jobs:
             core.setOutput("already_ingested", labels.includes("ingested"));
 
       - if: steps.check.outputs.already_ingested != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - if: steps.check.outputs.already_ingested != 'true'
         uses: actions/setup-python@v7
